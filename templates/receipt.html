@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Receipt</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fdf3f7;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    .receipt-box {
+      max-width: 700px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #c2185b;
+      margin-bottom: 30px;
+    }
+
+    .item-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 1rem;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-top: 1px solid #f8bbd0;
+      padding-top: 15px;
+      margin-top: 20px;
+      color: #d81b60;
+    }
+
+    .thank-you {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 1rem;
+      color: #4a4a4a;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .back-home a {
+      background-color: #f48fb1;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-home a:hover {
+      background-color: #ec407a;
+    }
+  </style>
+</head>
+<body>
+  <div class="receipt-box">
+    <h2>Purchase Receipt</h2>
+
+    {% if items %}
+      {% for item in items %}
+        <div class="item-line">
+          <span>{{ item.product.title }}</span>
+          <span>RM {{ item.product.price or '0.00' }}</span>
+        </div>
+      {% endfor %}
+      <div class="item-line total">
+        <span>Total</span>
+        <span>RM {{ "%.2f"|format(total) }}</span>
+      </div>
+    {% endif %}
+
+    <div class="thank-you">
+      Thank you for shopping with Swopsy Marketplace! 💕
+    </div>
+
+    <div class="back-home">
+      <a href="{{ url_for('home') }}">← Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>

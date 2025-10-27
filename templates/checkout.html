@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f5;
+      margin: 0;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    .checkout-container {
+      max-width: 700px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #c2185b;
+      margin-bottom: 10px;
+      font-size: 1.8rem;
+    }
+
+    .back-link-top,
+    .back-link-bottom {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .back-link-top a,
+    .back-link-bottom a {
+      color: #c2185b;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .back-link-top a:hover,
+    .back-link-bottom a:hover {
+      text-decoration: underline;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      color: #880e4f;
+    }
+
+    .radio-group {
+      margin-bottom: 16px;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .submit-btn {
+      background-color: #ec407a;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #d81b60;
+    }
+
+    .summary-box {
+      margin-top: 30px;
+      background-color: #ffe6f0;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .summary-box h3 {
+      margin-top: 0;
+      color: #ad1457;
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    .total-line {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #d81b60;
+      border-top: 1px solid #f8bbd0;
+      padding-top: 10px;
+      margin-top: 12px;
+    }
+
+    @media screen and (max-width: 500px) {
+      .checkout-container {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .submit-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <h2>Checkout</h2>
+
+    <div class="back-link-top">
+      <a href="{{ url_for('home') }}">← Back to Home</a>
+    </div>
+
+    <!-- ✅ Order Summary -->
+    <div class="summary-box">
+      <h3>Order Summary</h3>
+
+      {% if items %}
+        {% set ns = namespace(total=0) %}
+        {% for item in items %}
+          <div class="summary-line">
+            <span>{{ item.product.title }}</span>
+            <span>RM {{ "%.2f"|format(item.product.price or 0) }}</span>
+          </div>
+          {% set ns.total = ns.total + (item.product.price or 0) %}
+        {% endfor %}
+        <div class="summary-line total-line">
+          <span>Total</span>
+          <span>RM {{ "%.2f"|format(ns.total) }}</span>
+        </div>
+
+      {% elif product %}
+        <div class="summary-line">
+          <span>{{ product.title }}</span>
+          <span>RM {{ "%.2f"|format(product.price or 0) }}</span>
+        </div>
+        <div class="summary-line total-line">
+          <span>Total</span>
+          <span>RM {{ "%.2f"|format(product.price or 0) }}</span>
+        </div>
+      {% else %}
+        <p style="text-align: center;">No products selected.</p>
+      {% endif %}
+    </div>
+
+    <!-- ✅ Checkout Form -->
+    <form method="POST">
+      {% if product %}
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+      {% endif %}
+
+      <label>Delivery Method:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="delivery" value="meetup" required> Meet-up</label>
+        <label><input type="radio" name="delivery" value="courier"> Courier</label>
+        <label><input type="radio" name="delivery" value="app_shipping"> App-integrated Shipping</label>
+      </div>
+
+      <label>Shipping Address:</label>
+      <input type="text" name="address" placeholder="Enter your address..." required>
+
+      <label>Payment Method:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="payment" value="credit" required> Credit/Debit</label>
+        <label><input type="radio" name="payment" value="wallet"> E-wallet</label>
+        <label><input type="radio" name="payment" value="cod"> Cash on Delivery</label>
+        <label><input type="radio" name="payment" value="bank"> Bank Transfer</label>
+      </div>
+
+      <button type="submit" class="submit-btn">Confirm Purchase</button>
+    </form>
+
+    <div class="back-link-bottom">
+      <a href="{{ url_for('cart') }}">← Back to Cart</a>
+    </div>
+  </div>
+</body>
+</html>
